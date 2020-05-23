@@ -67,14 +67,24 @@ namespace de4dot.code.deobfuscators.SmartAssembly {
 			"System.Byte[]",
 			"System.Int32",
 		};
+		static string[] fields4x = new string[] {
+            "System.String",
+            "System.Byte[]",
+            "System.Collections.Generic.Dictionary`2<System.Int32,System.String>",
+            "System.Object",
+            "System.Boolean",
+            "System.Int32",
+		};
 		StringDecrypterVersion GuessVersion(MethodDef cctor) {
-			var fieldTypes = new FieldTypes(stringsEncodingClass);
+			var fieldTypes = new FieldTypes(stringsEncodingClass);	// Data fields of StringEncryptor class
 			if (fieldTypes.Exactly(fields2x))
 				return StringDecrypterVersion.V2;
 			if (cctor == null)
 				return StringDecrypterVersion.V1;
 			if (fieldTypes.Exactly(fields3x))
 				return StringDecrypterVersion.V3;
+			if (fieldTypes.Exactly(fields4x))
+				return StringDecrypterVersion.V4;
 			return StringDecrypterVersion.Unknown;
 		}
 
@@ -259,10 +269,15 @@ namespace de4dot.code.deobfuscators.SmartAssembly {
 				return true;
 
 			var methods = new List<MethodDef>(DotNetUtils.FindMethods(stringsEncodingClass.Methods, "System.String", new string[] { "System.Int32" }));
-			if (methods.Count != 1)
+			if(decrypterVersion == StringDecrypterVersion.V4)
+			 {
+              if (methods.Count != 3)
+				return false;	 
+			 }
+			  else if (methods.Count != 1)
 				return false;
 
-			stringDecrypterMethod = methods[0];
+	        stringDecrypterMethod = methods[0];		
 			return true;
 		}
 

@@ -191,7 +191,7 @@ namespace de4dot.code.deobfuscators.SmartAssembly {
 				return false;
 
 			var methods = new List<MethodDef>(DotNetUtils.GetNormalMethods(type));
-			if (methods.Count != 1)
+			if (methods.Count < 1 || methods.Count > 6)
 				return false;
 			var method = methods[0];
 			if (!DotNetUtils.IsMethod(method, "System.String", "(System.Int32)"))
